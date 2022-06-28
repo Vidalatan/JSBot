@@ -14,7 +14,8 @@ c.once('ready', () => {
 c.on('messageCreate', (m) => {
   if(m.author.id === ME) return
   if(m.content.slice(0,prefix.length) === prefix){
-    m.content = m.content.slice(prefix.length)
+    m.content = m.content.slice(prefix.length);
+    m.ME = c;
     COMMANDS.execute(m)
   }
 })
