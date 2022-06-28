@@ -17,6 +17,12 @@ module.exports = {
   },
   $ping:'Replies directly with \'ping\'',
 
+  /**
+   * Will randomly select an insult string from the array and replace any 
+   * '%target%' portion of the string with the actual target argument. If no 
+   * target was entered, then the target used will be the original message author
+   * @param {*} target Target for the command to insult
+   */
   insult(ctx, target){
     const insults = 
     [
@@ -40,6 +46,26 @@ module.exports = {
     target with @: \`\`!!insult @{name#discriminator}\`\`
     target without @: \`\`!!insult {anything}\`\`
     no target: \`\`!!insult\`\``,
+
+  roll(ctx, formula){
+    let n;
+    let s;
+    let roll = [];
+    let final;
+    if(formula){
+      n = formula.slice(0, formula.indexOf('d'));
+      s = formula.slice(formula.indexOf('d')+1);
+    } else {
+      n = 1;
+      s = 6;
+    }
+    for(let i = 0; i < n; i++){
+      roll.push(Math.floor(Math.random()*s)+1)
+    }
+    final = roll.reduce((a, b) => a+b), 0
+    ctx.channel.send(`You rolled a: ${final}
+    (${roll})`);
+  },
 
   /**
    * Will loop through and match to anything prepended with '$' and the name of the command.
