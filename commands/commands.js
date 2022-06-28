@@ -15,7 +15,10 @@
 module.exports = {
 
   ping:{
-    helper:'Replies directly with \'ping\'',
+    helper:
+    `Replies directly with \'ping\'
+
+    Example: \`\`!!ping\`\``,
     /**
      * Test command 
      */
@@ -27,6 +30,7 @@ module.exports = {
   insult:{
     helper:
     `Will either insult a given target, or the one who invoked the command.
+
     Examples:
       target with @: \`\`!!insult @{name#discriminator}\`\`
       target without @: \`\`!!insult {anything}\`\`
@@ -62,6 +66,7 @@ module.exports = {
     `Rolls dice according to the standard dice formula (nDs).
     'n' is the number of dice you wish to roll.
     's' is the number of sides each dice should have.
+
     Example: \`\`!!roll 2d10\`\``,
 
     /**
@@ -93,9 +98,35 @@ module.exports = {
     },
   },
 
+  commandlist:{
+    helper:
+    `Replies to the user with the list of all commands and their descriptions.
+    
+    Example: \`\`!!commandlist\`\``,
+
+    /**
+     * Loops through all of the properties in this export object and appends them to 
+     * the cmdList string formatted as to show the name in caps and the helper description 
+     * underneath.
+     * @reply List of commands and their descriptions
+     */
+    e(ctx){
+      let cmdList='Here is a list of all the available commands (commands are not case sensitive):\n'
+      for(let command in this.parent){
+          cmdList += 
+          `\`\`\`\n`+
+          `${command.toUpperCase()}:\n\n`+
+          `\t${this.parent[command]['helper']}\n`+
+          `\`\`\`\n`
+      }
+      ctx.reply(cmdList)
+    }
+  },
+
   help:{
     helper:
     `Will look for valid matching command.
+
     Example:\`\` !!help {command} \`\``,
     
     /**
@@ -116,6 +147,7 @@ module.exports = {
 
   _init_: function(){
     this.help.parent = this;
+    this.commandlist.parent = this;
     delete this._init_;
     return this;
   }
