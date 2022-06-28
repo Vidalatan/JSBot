@@ -1,5 +1,9 @@
 /* 
   All commands require a 'ctx' argument to represent the context of the message/command sent.
+  @param ctx is omitted from all docstrings to prevent redundancy.
+
+  Here, ctx will always represent a Message object. 
+  Documentation: https://discord.js.org/#/docs/discord.js/stable/class/Message
 
   Each command should follow this structure:
     {name}:{
@@ -20,7 +24,8 @@ module.exports = {
 
     Example: \`\`!!ping\`\``,
     /**
-     * Test command 
+     * Test command that will reply to the user with 'pong'
+     * @reply Replies 'pong'
      */
     e(ctx){
       ctx.reply('pong')
@@ -40,7 +45,8 @@ module.exports = {
      * Will randomly select an insult string from the array and replace any 
      * '%target%' portion of the string with the actual target argument. If no 
      * target was entered, then the target used will be the original message author
-     * @param {*} target Target for the command to insult
+     * @param {string | mention} target Target for the command to insult
+     * @send Sends randomly selected insult with target replaced in the string
      */
     e(ctx, target){
       const insults = 
@@ -133,6 +139,8 @@ module.exports = {
      * Loops though all commands in the list and matches it to the command 
      * parameter, then returns that string as a message to the user's channel.
      * @param {string} cmd command that should be searched for
+     * @reply Either the helper description for that command, or a message 
+     * stating no command was found.
      */
     e(ctx, cmd){
       for(let command in this.parent){
@@ -145,6 +153,7 @@ module.exports = {
     }
   },
 
+  // Appends refrence to the exports object
   _init_: function(){
     this.help.parent = this;
     this.commandlist.parent = this;
