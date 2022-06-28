@@ -47,14 +47,22 @@ module.exports = {
     target without @: \`\`!!insult {anything}\`\`
     no target: \`\`!!insult\`\``,
 
+  /**
+   * Take standard dice formala as argument and calculate a random number. Send that number 
+   * back into the chat where the command was originally invoked.
+   * @param {string} formula Formula used to determine dice roll. Will always be
+   * formated as such: nDs where n is the number of dice, and s is the number 
+   * of sides for each dice.
+   * @send Sends final dice result, as well as all subsequent dice rolls
+   */
   roll(ctx, formula){
     let n;
     let s;
     let roll = [];
     let final;
     if(formula){
-      n = formula.slice(0, formula.indexOf('d'));
-      s = formula.slice(formula.indexOf('d')+1);
+      n = formula.slice(0, formula.toLowerCase().indexOf('d'));
+      s = formula.slice(formula.toLowerCase().indexOf('d')+1);
     } else {
       n = 1;
       s = 6;
@@ -66,6 +74,11 @@ module.exports = {
     ctx.channel.send(`You rolled a: ${final}
     (${roll})`);
   },
+  $roll:
+  `Rolls dice according to the standard dice formula (nDs).
+  'n' is the number of dice you wish to roll.
+  's' is the number of sides each dice should have.
+  Example: \`\`!!roll 2d10\`\``,
 
   /**
    * Will loop through and match to anything prepended with '$' and the name of the command.
