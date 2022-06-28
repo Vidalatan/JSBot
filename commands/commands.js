@@ -1,11 +1,16 @@
-
 /* 
   All commands require a 'ctx' argument to represent the context of the message/command sent.
 
   Each command should follow this structure:
-    -docstring (optional)
-    -function(ctx, [...args]),
-    -$helper: {string}
+    {name}:{
+      helper:'{Description of command for user}',
+      **
+      docstring (optional)
+      *
+      e(ctx, ...args){
+        //do something here
+      }
+    },
 */
 module.exports = {
 
@@ -88,26 +93,30 @@ module.exports = {
     },
   },
 
-  helper:{
+  help:{
     helper:
     `Will look for valid matching command.
     Example:\`\` !!help {command} \`\``,
     
     /**
-     * Will loop through and match to anything prepended with '$' and the name of the command.
-     * Format of adding a command helper is to declare the command helper underneath the 
-     * command.
-     * @param {string} command command that should be searched for
+     * Loops though all commands in the list and matches it to the command 
+     * parameter, then returns that string as a message to the user's channel.
+     * @param {string} cmd command that should be searched for
      */
-    e(ctx, command){
-      for(let helper in this){
-        if(helper[0] === '$' && helper.slice(1) === command){
-          ctx.reply(this[helper])
+    e(ctx, cmd){
+      for(let command in this.parent){
+        if(command === cmd) {
+          ctx.reply(this.parent[command]['helper'])
           return
         }
       }
-      ctx.reply(`No command called ${command} was found.`)
+      ctx.reply(`No command called ${cmd} was found.`)
     }
-  }
+  },
 
-}
+  _init_: function(){
+    this.help.parent = this;
+    delete this._init_;
+    return this;
+  }
+}._init_()
