@@ -5,7 +5,7 @@ module.exports = {
     const [cmd, ...args] = ctx.content.split(' ');
     if(cmd[0]==='_' && cmd.slice(-1)==='_') return
     for(let command in commandList){
-      (command === cmd && commandList[cmd](ctx, ...args))
+      (command === cmd && commandList[cmd].e(ctx, ...args))
     }
   }
 }
