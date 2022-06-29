@@ -1,3 +1,6 @@
+const { blackjack } = require('./challengeGames/blackjack.js')
+const { holdem } = require('./challengeGames/holdem.js')
+
 /* 
   All commands require a 'ctx' argument to represent the context of the message/command sent.
   @param ctx is omitted from all docstrings to prevent redundancy.
@@ -102,6 +105,24 @@ module.exports = {
       ctx.channel.send(`You rolled a: ${final}
       (${roll})`);
     },
+  },
+
+  challenge:{
+    helper:'',
+
+    e(ctx, target, game=''){
+      if(ctx.mentions.users?.first()?.id === target.slice(2,-1)) {
+        switch (game.toLowerCase()) {
+          case 'blackjack':
+            blackjack(ctx, target)
+            return;
+          case 'holdem':
+            holdem(ctx, target)
+            return;
+        }
+      }
+      ctx.channel.send('Either there the person you challenged or the game you requested doesn\'t exist.')
+    }
   },
 
   commandlist:{
