@@ -12,7 +12,7 @@ module.exports = {
 
   interactionRouter(ctx){
     for(let challenge in challenges){
-      if(ctx.customId.slice(3,7) === challenges[challenge].chg) challenges[challenge].interaction(ctx)
+      if(ctx.customId.slice(3,6) === challenges[challenge].chg) challenges[challenge].interaction(ctx)
     }
   }
 }

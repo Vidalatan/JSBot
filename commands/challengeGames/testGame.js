@@ -20,30 +20,37 @@ module.exports = {
           .setLabel('-1')
           .setStyle('DANGER'),
       )
+    const row2 = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId('cmdtst3')
+          .setLabel('close')
+          .setStyle('PRIMARY'),
+        
+      )
 
-    ctx.channel.send({ embeds: [exampleEmbed], components: [row]})
+    ctx.channel.send({ embeds: [exampleEmbed], components: [row, row2]})
   },
 
   interaction(ctx){
-    console.log(ctx.message.embeds[0].fields);
-    // const newEmb = new MessageEmbed(ctx.message.embeds[0])
-    //   .setFields([{...ctx.message.embeds[0].fields[0], name:'TestField Change'}])
-    // let newEmb;
-    // console.log(ctx.customId.slice(6))
-
-    // switch (ctx.customId.slice(6)) {
-    //   case '+1':
-    //     newEmb = new MessageEmbed(ctx.message.embeds[0])
-    //       .setFields([{...ctx.message.embeds[0].fields[0], value:String(Number(ctx.message.embeds[0].fields[0].value)+1)}])
-    //     break;
-    //   case '-1':
-    //     newEmb = new MessageEmbed(ctx.message.embeds[0])
-    //       .setFields([{...ctx.message.embeds[0].fields[0], value:String(Number(ctx.message.embeds[0].fields[0].value)-1)}])
-    //     break;
-    // }
+    let newEmb;
+    switch (ctx.customId.slice(6)) {
+      case '+1':
+        newEmb = new MessageEmbed(ctx.message.embeds[0])
+          .setFields([{...ctx.message.embeds[0].fields[0], value:String(Number(ctx.message.embeds[0].fields[0].value)+1)}])
+        break;
+      case '-1':
+        newEmb = new MessageEmbed(ctx.message.embeds[0])
+          .setFields([{...ctx.message.embeds[0].fields[0], value:String(Number(ctx.message.embeds[0].fields[0].value)-1)}])
+        break;
+      default:
+        ctx.reply({content:'Doesn\'t work bucko', ephemeral:true})
+        // ctx.deferUpdate()  <-- will prevent the 'interaction failed' message but give no indication that something happened.
+        return;
+    }
     
-    // ctx.update({
-    //   embeds: [newEmb]
-    // })
+    ctx.update({
+      embeds: [newEmb]
+    })
   },
 }
