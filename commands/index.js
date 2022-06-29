@@ -1,5 +1,5 @@
 const commandList = require('./commands.js');
-const challenges = commandList.challenges
+const challenges = commandList._challenges
 
 module.exports = {
   execute(ctx){

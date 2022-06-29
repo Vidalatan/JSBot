@@ -135,7 +135,7 @@ module.exports = {
       ctx.channel.send('Either there the person you challenged or the game you requested doesn\'t exist.')
     }
   },
-  challenges:challenges,
+  _challenges:challenges,
 
   commandlist:{
     helper:
@@ -152,11 +152,13 @@ module.exports = {
     e(ctx){
       let cmdList='Here is a list of all the available commands (commands are not case sensitive):\n'
       for(let command in this.parent){
+        if(command[0] !== '_'){
           cmdList += 
           `\`\`\`\n`+
           `${command.toUpperCase()}:\n\n`+
           `\t${this.parent[command]['helper']}\n`+
           `\`\`\`\n`
+        }
       }
       ctx.reply(cmdList)
     }
