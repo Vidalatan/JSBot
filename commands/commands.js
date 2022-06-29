@@ -91,21 +91,28 @@ module.exports = {
     e(ctx, formula){
       let n;
       let s;
+      let p;
       let roll = [];
       let final;
       if(formula){
         n = formula.slice(0, formula.toLowerCase().indexOf('d'));
-        s = formula.slice(formula.toLowerCase().indexOf('d')+1);
+        p = formula.includes('+') ? Number(formula.slice(formula.indexOf('+')+1, formula.length)) : 0
+        s = formula.slice(formula.toLowerCase().indexOf('d')+1,  p ? formula.indexOf('+'): formula.length);
       } else {
         n = 1;
         s = 6;
+        p = 0;
+      }
+      if(!n || !s || n > 100 || s > 1000 || formula.includes('-')) {
+        ctx.channel.send('Sorry. You can\'t do that');
+        return;
       }
       for(let i = 0; i < n; i++){
         roll.push(Math.floor(Math.random()*s)+1)
       }
       final = roll.reduce((a, b) => a+b), 0
-      ctx.channel.send(`You rolled a: ${final}
-      (${roll})`);
+      ctx.channel.send(`You rolled a: ${final+p}
+      (${roll})${p ? `+${p}`:''}`);
     },
   },
 
