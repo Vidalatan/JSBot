@@ -1,5 +1,7 @@
+const config = require('../config.json')
 const { blackjack } = require('./challengeGames/blackjack.js')
 const { holdem } = require('./challengeGames/holdem.js')
+const { testGame } = require('./challengeGames/testGame.js')
 
 /* 
   All commands require a 'ctx' argument to represent the context of the message/command sent.
@@ -25,7 +27,7 @@ module.exports = {
     helper:
     `Replies directly with \'pong\'
 
-    Example: \`\`!!ping\`\``,
+    Example: \`\`${config.prefix}ping\`\``,
     /**
      * Test command that will reply to the user with 'pong'
      * @reply Replies 'pong'
@@ -40,9 +42,9 @@ module.exports = {
     `Will either insult a given target, or the one who invoked the command.
 
     Examples:
-      target with @: \`\`!!insult @{name#discriminator}\`\`
-      target without @: \`\`!!insult {anything}\`\`
-      no target: \`\`!!insult\`\``,
+      target with @: \`\`${config.prefix}insult @{name#discriminator}\`\`
+      target without @: \`\`${config.prefix}insult {anything}\`\`
+      no target: \`\`${config.prefix}insult\`\``,
 
     /**
      * Will randomly select an insult string from the array and replace any 
@@ -76,7 +78,7 @@ module.exports = {
     'n' is the number of dice you wish to roll.
     's' is the number of sides each dice should have.
 
-    Example: \`\`!!roll 2d10\`\``,
+    Example: \`\`${config.prefix}roll 2d10\`\``,
 
     /**
      * Take standard dice formala as argument and calculate a random number. Send that number 
@@ -119,6 +121,9 @@ module.exports = {
           case 'holdem':
             holdem(ctx, target)
             return;
+          case 'testgame':
+            testGame(ctx, target)
+            return;
         }
       }
       ctx.channel.send('Either there the person you challenged or the game you requested doesn\'t exist.')
@@ -129,7 +134,7 @@ module.exports = {
     helper:
     `Replies to the user with the list of all commands and their descriptions.
     
-    Example: \`\`!!commandlist\`\``,
+    Example: \`\`${config.prefix}commandlist\`\``,
 
     /**
      * Loops through all of the properties in this export object and appends them to 
@@ -154,7 +159,7 @@ module.exports = {
     helper:
     `Will look for valid matching command.
 
-    Example:\`\` !!help {command} \`\``,
+    Example:\`\` ${config.prefix}help {command} \`\``,
     
     /**
      * Loops though all commands in the list and matches it to the command 

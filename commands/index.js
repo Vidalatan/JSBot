@@ -7,5 +7,9 @@ module.exports = {
     for(let command in commandList){
       (command === cmd && commandList[cmd].e(ctx, ...args))
     }
+  },
+
+  interactionRouter(ctx){
+    
   }
 }
