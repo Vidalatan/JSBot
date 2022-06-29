@@ -20,7 +20,7 @@ module.exports = {
 
   ping:{
     helper:
-    `Replies directly with \'ping\'
+    `Replies directly with \'pong\'
 
     Example: \`\`!!ping\`\``,
     /**
