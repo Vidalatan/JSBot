@@ -1,4 +1,5 @@
 const commandList = require('./commands.js');
+const challenges = commandList.challenges
 
 module.exports = {
   execute(ctx){
@@ -10,6 +11,8 @@ module.exports = {
   },
 
   interactionRouter(ctx){
-    
+    for(let challenge in challenges){
+      if(ctx.customId.slice(3,7) === challenges[challenge].chg) challenges[challenge].interaction(ctx)
+    }
   }
 }

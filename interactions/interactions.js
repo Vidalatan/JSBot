@@ -1,7 +1,10 @@
-const { interactionRouter } = require('../commands/index.js')
+const COMMANDS = require('../commands/index.js')
 
 module.exports = {
-  challenge(ctx){
-    
+  challenge:{
+    route:'cmd',
+    send(ctx){
+      COMMANDS.interactionRouter(ctx)
+    }
   }
 }

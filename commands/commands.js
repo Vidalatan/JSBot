@@ -1,7 +1,10 @@
 const config = require('../config.json')
-const { blackjack } = require('./challengeGames/blackjack.js')
-const { holdem } = require('./challengeGames/holdem.js')
-const { testGame } = require('./challengeGames/testGame.js')
+const challenges = 
+{
+  blackjack:require('./challengeGames/blackjack.js'),
+  holdem:require('./challengeGames/holdem.js'),
+  testgame:require('./challengeGames/testGame.js')
+}
 
 /* 
   All commands require a 'ctx' argument to represent the context of the message/command sent.
@@ -22,7 +25,6 @@ const { testGame } = require('./challengeGames/testGame.js')
     },
 */
 module.exports = {
-
   ping:{
     helper:
     `Replies directly with \'pong\'
@@ -119,25 +121,21 @@ module.exports = {
   },
 
   challenge:{
-    helper:'',
+    helper:'WIP',
 
     e(ctx, target, game=''){
       if(ctx.mentions.users?.first()?.id === target.slice(2,-1)) {
-        switch (game.toLowerCase()) {
-          case 'blackjack':
-            blackjack(ctx, target)
-            return;
-          case 'holdem':
-            holdem(ctx, target)
-            return;
-          case 'testgame':
-            testGame(ctx, target)
-            return;
+        for(let challenge in challenges){
+          if(challenge === game.toLowerCase()) {
+            challenges[challenge].play(ctx, target)
+            return
+          }
         }
       }
       ctx.channel.send('Either there the person you challenged or the game you requested doesn\'t exist.')
     }
   },
+  challenges:challenges,
 
   commandlist:{
     helper:
