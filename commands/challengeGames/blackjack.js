@@ -1,4 +1,7 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { User } = require('../../models/User.js')
+const Blackjack = require('../../models/challenges/Blackjack.js');
+
 const SUITS = ['♦️','♥️','♣️','♠️'];
 const VALUES = 
 [
@@ -48,15 +51,19 @@ function createHand(isDealer=false){
 
 module.exports = {
   chg:'blj',
-  play(ctx, target, ...options){
+  async play(ctx, target, ...options){
     const decks = Number(options.filter(opts => {if(opts.includes('decks=')) return true})[0]?.slice(6))??0
     if(decks > 5){
       ctx.reply('Deck limit (5) exceeded. Please try again.');
+      return;
     }
+
+    const gameCode = Math.floor(Math.random()*1000)
     const bljEmb = new MessageEmbed()
       .setTitle('Blackjack')
       .setDescription(`Dealer: ??`)
       .addField('Deck', `${addDecks(decks)}`, true)
+      .setFooter({text:String(gameCode)})
     
     const row = new MessageActionRow()
     .addComponents(
@@ -72,13 +79,44 @@ module.exports = {
         .setCustomId('cmdbljforfeit')
         .setLabel('Forfeit')
         .setStyle('DANGER'),
+      new MessageButton()
+        .setCustomId('cmdbljtest')
+        .setLabel('Test DB')
+        .setStyle('SECONDARY'),
     )
 
-    console.log(decks);
+    try {
+      const newUsers = []
+      for(let u of [ctx.author.id, target.slice(2,-1)]){
+        const f = await User.findOne({user:u})
+        if(f){
+          newUsers.push(f)
+        } else{
+          newUsers.push(await User.create({user:`<@${u}>`}))
+        }
+      }
+      await Blackjack.create({gameId: gameCode, users:newUsers})
+    } catch (err) {
+      console.error(err);
+      ctx.reply({content: 'Either you or the target are already in a game...', ephemeral:true})
+      return;
+    }
+
     ctx.channel.send({embeds: [bljEmb], components: [row]})
   },
 
-  interaction(ctx){
-
+  async interaction(ctx){
+    if(ctx.customId === 'cmdbljtest') {
+      const foot = Number(ctx.message.embeds[0].footer.text)
+      const usersData = await Blackjack.findOne({gameId: foot})
+      console.log(usersData);
+      const users = usersData.users.map( user => user.user)
+      ctx.reply(`Testing DB. Successfully retrieved current players: ${users}
+      Using gameid ${usersData.gameId} (found in the footer of the game)`)
+    } else if(ctx.customId === 'cmdbljforfeit') {
+      await User.deleteMany({})
+      await Blackjack.deleteMany({})
+      ctx.message.delete();
+    }
   }
 }
