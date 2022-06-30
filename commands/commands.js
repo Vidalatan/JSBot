@@ -123,11 +123,11 @@ module.exports = {
   challenge:{
     helper:'WIP',
 
-    e(ctx, target, game=''){
+    e(ctx, target, game='', ...options){
       if(ctx.mentions.users?.first()?.id === target.slice(2,-1)) {
         for(let challenge in challenges){
           if(challenge === game.toLowerCase()) {
-            challenges[challenge].play(ctx, target)
+            challenges[challenge].play(ctx, target, ...options)
             return
           }
         }

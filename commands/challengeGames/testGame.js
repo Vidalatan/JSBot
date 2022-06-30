@@ -44,8 +44,8 @@ module.exports = {
           .setFields([{...ctx.message.embeds[0].fields[0], value:String(Number(ctx.message.embeds[0].fields[0].value)-1)}])
         break;
       default:
-        ctx.reply({content:'Doesn\'t work bucko', ephemeral:true})
-        // ctx.deferUpdate()  <-- will prevent the 'interaction failed' message but give no indication that something happened.
+        ctx.message.delete()
+        ctx.channel.send('Game closed');
         return;
     }
     
