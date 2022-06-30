@@ -1,4 +1,5 @@
 require('dotenv').config();
+const db = require('./dbconfig/connection.js')
 const { Client, Intents } = require('discord.js');
 const { prefix } = require('./config.json')
 const COMMANDS = require('./commands/index.js');
