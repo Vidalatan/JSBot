@@ -1,6 +1,6 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { User } = require('../../models/User.js')
-const Blackjack = require('../../models/challenges/Blackjack.js');
+const {Blackjack} = require('../../models/challenges/Blackjack.js');
 
 const SUITS = ['♦️','♥️','♣️','♠️'];
 const VALUES = 
@@ -57,13 +57,35 @@ module.exports = {
       ctx.reply('Deck limit (5) exceeded. Please try again.');
       return;
     }
+    const newUsers = []
+    const gameCode = () => {
+      var tmp = '';
+      for(let i = 0; i < 12; i++){
+        tmp += (newUsers[0].user.slice(2,-1)[i] ?? Math.floor(Math.random()*10))+(newUsers[1].user.slice(2,-1)[i] ?? Math.floor(Math.random()*10));
+      }
+      return tmp;
+    }
+    try {
+      for(let u of [ctx.author.id, target.slice(2,-1)]){
+        const f = await User.findOne({user:u})
+        if(f){
+          newUsers.push(f)
+        } else{
+          newUsers.push(await User.create({user:`<@${u}>`}))
+        }
+      }
+      await Blackjack.create({gameId: gameCode(), users:newUsers})
+    } catch (err) {
+      console.error(err);
+      ctx.reply({content: 'Either you or the target are already in a game...', ephemeral:true})
+      return;
+    }
 
-    const gameCode = Math.floor(Math.random()*1000)
     const bljEmb = new MessageEmbed()
       .setTitle('Blackjack')
       .setDescription(`Dealer: ??`)
       .addField('Deck', `${addDecks(decks)}`, true)
-      .setFooter({text:String(gameCode)})
+      .setFooter({text:String(gameCode())})
     
     const row = new MessageActionRow()
     .addComponents(
@@ -85,34 +107,21 @@ module.exports = {
         .setStyle('SECONDARY'),
     )
 
-    try {
-      const newUsers = []
-      for(let u of [ctx.author.id, target.slice(2,-1)]){
-        const f = await User.findOne({user:u})
-        if(f){
-          newUsers.push(f)
-        } else{
-          newUsers.push(await User.create({user:`<@${u}>`}))
-        }
-      }
-      await Blackjack.create({gameId: gameCode, users:newUsers})
-    } catch (err) {
-      console.error(err);
-      ctx.reply({content: 'Either you or the target are already in a game...', ephemeral:true})
-      return;
-    }
 
     ctx.channel.send({embeds: [bljEmb], components: [row]})
   },
 
   async interaction(ctx){
     if(ctx.customId === 'cmdbljtest') {
-      const foot = Number(ctx.message.embeds[0].footer.text)
-      const usersData = await Blackjack.findOne({gameId: foot})
-      console.log(usersData);
-      const users = usersData.users.map( user => user.user)
-      ctx.reply(`Testing DB. Successfully retrieved current players: ${users}
-      Using gameid ${usersData.gameId} (found in the footer of the game)`)
+      try {
+        const foot = Number(ctx.message.embeds[0].footer.text)
+        const usersData = await Blackjack.findOne({gameId: foot})
+        const users = usersData.users.map( user => user.user)
+        ctx.reply(`Testing DB. Successfully retrieved current players: ${users}
+        Using gameid ${usersData.gameId} (found in the footer of the game)`)
+      } catch (err) {
+        console.log(err);
+      }
     } else if(ctx.customId === 'cmdbljforfeit') {
       await User.deleteMany({})
       await Blackjack.deleteMany({})

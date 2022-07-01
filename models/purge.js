@@ -8,7 +8,6 @@ const DBs =
 
 function _purge_(){
   for(let db of DBs){
-    console.log(db);
     db['_purge_']()
   }
 }
