@@ -12,5 +12,4 @@ function _purge_(){
     db['_purge_']()
   }
 }
-
 module.exports = {_purge_}

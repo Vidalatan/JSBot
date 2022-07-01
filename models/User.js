@@ -12,8 +12,9 @@ const userSchema = new Schema(
 
 const User = model('user', userSchema);
 
-function _purge_(){
-  User.deleteMany({})
+async function _purge_(){
+  console.log('Users Purged');
+  await User.deleteMany()
 }
 
 module.exports = {User, userSchema, _purge_};
