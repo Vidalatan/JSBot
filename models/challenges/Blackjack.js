@@ -13,5 +13,8 @@ const blackjackSchema = new Schema(
 );
 
 const Blackjack = model('blackjack', blackjackSchema);
+function _purge_(){
+  Blackjack.deleteMany({});
+}
 
-module.exports = Blackjack;
+module.exports = {Blackjack, _purge_};

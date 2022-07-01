@@ -1,4 +1,5 @@
 const config = require('../config.json')
+const {_purge_} = require('../models/purge.js')
 const challenges = 
 {
   blackjack:require('./challengeGames/blackjack.js'),
@@ -185,6 +186,14 @@ module.exports = {
         }
       }
       ctx.reply(`No command called ${cmd} was found.`)
+    }
+  },
+
+  $purgedb:{
+    helper:'Dev Only',
+    e(ctx){
+      _purge_()
+      ctx.reply({content: 'DBs purged', ephemeral: true})
     }
   },
 
