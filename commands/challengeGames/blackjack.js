@@ -1,4 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { generateId } = require('../../utils/gameIdGenerator')
 const { User } = require('../../models/User.js')
 const {Blackjack} = require('../../models/challenges/Blackjack.js');
 
@@ -58,13 +59,7 @@ module.exports = {
       return;
     }
     const newUsers = []
-    const gameCode = () => {
-      var tmp = '';
-      for(let i = 0; i < 12; i++){
-        tmp += (newUsers[0].user.slice(2,-1)[i] ?? Math.floor(Math.random()*10))+(newUsers[1].user.slice(2,-1)[i] ?? Math.floor(Math.random()*10));
-      }
-      return tmp;
-    }
+    let id;
     try {
       for(let u of [ctx.author.id, target.slice(2,-1)]){
         const f = await User.findOne({user:u})
@@ -74,7 +69,8 @@ module.exports = {
           newUsers.push(await User.create({user:`<@${u}>`}))
         }
       }
-      await Blackjack.create({gameId: gameCode(), users:newUsers})
+      id = generateId(newUsers)
+      await Blackjack.create({gameId: id, users:newUsers})
     } catch (err) {
       console.error(err);
       ctx.reply({content: 'Either you or the target are already in a game...', ephemeral:true})
@@ -85,7 +81,7 @@ module.exports = {
       .setTitle('Blackjack')
       .setDescription(`Dealer: ??`)
       .addField('Deck', `${addDecks(decks)}`, true)
-      .setFooter({text:String(gameCode())})
+      .setFooter({text:String(id)})
     
     const row = new MessageActionRow()
     .addComponents(
@@ -114,9 +110,10 @@ module.exports = {
   async interaction(ctx){
     if(ctx.customId === 'cmdbljtest') {
       try {
-        const foot = Number(ctx.message.embeds[0].footer.text)
+        const foot = ctx.message.embeds[0].footer.text
         const usersData = await Blackjack.findOne({gameId: foot})
         const users = usersData.users.map( user => user.user)
+        console.log(usersData);
         ctx.reply(`Testing DB. Successfully retrieved current players: ${users}
         Using gameid ${usersData.gameId} (found in the footer of the game)`)
       } catch (err) {
