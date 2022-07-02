@@ -3,6 +3,7 @@ const { generateId } = require('../../utils/gameIdGenerator')
 const { User } = require('../../models/User.js')
 const {Blackjack} = require('../../models/challenges/Blackjack.js');
 
+// Suits and Values of cards
 const SUITS = ['♦️','♥️','♣️','♠️'];
 const VALUES = 
 [
@@ -12,6 +13,7 @@ const VALUES =
   '7', '8', '9', '10'
 ]
 
+// For each suit, create a {suit,value} pair and then flatten the array
 const DECK = SUITS.flatMap(suit => {
   const set = []
   for(let value of VALUES){
@@ -54,17 +56,20 @@ function createHand(isDealer=false){
 module.exports = {
   chg:'blj',
   async play(ctx, target, ...options){
+    // Determine if the user calling the command requested specific amount of extra decks to be used, if not default to 0.
     const decks = Number(options.filter(opts => {if(opts.includes('decks=')) return true})[0]?.slice(6))??0
+    // If more than 5 decks are requested, reply with deck request limit.
     if(decks > 5){
       ctx.reply('Deck limit (5) exceeded. Please try again.');
       return;
     }
-    const gameDeck = await addDecks(decks);
-    const newUsers = []
-    let id;
+    const gameDeck = await addDecks(decks); // Combination of decks after they have been shuffled.
+    const newUsers = []; // List will be used to hold the requesting and challenged players
+    let id; // Will be used to set the game Id                   
     try {
       for(let u of [ctx.author.id, target.slice(2,-1)]){
-        const f = await User.findOne({user:u})
+        const f = await User.findOne({user:`<@${u}>`})
+        console.log(f, u);
         if(f){
           newUsers.push(f)
         } else{
@@ -72,7 +77,7 @@ module.exports = {
         }
       }
       id = generateId(newUsers)
-      console.log(gameDeck);
+      console.log('notbroke');
       await Blackjack.create({gameId: id, users:newUsers, deck:gameDeck})
     } catch (err) {
       console.error(err);
