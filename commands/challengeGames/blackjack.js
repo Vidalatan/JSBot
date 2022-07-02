@@ -6,16 +6,16 @@ const {Blackjack} = require('../../models/challenges/Blackjack.js');
 const SUITS = ['♦️','♥️','♣️','♠️'];
 const VALUES = 
 [
-  'A', 'J', 'Q', 'K',
-  '1', '2', '3', '4',
-  '5', '6', '7', '8',
-  '9', '10'
+  'A', 'J', 'Q',
+  'K', '2', '3',
+  '4', '5', '6',
+  '7', '8', '9', '10'
 ]
 
 const DECK = SUITS.flatMap(suit => {
   const set = []
   for(let value of VALUES){
-    set.push(value+suit)
+    set.push({suit:suit, value:value})
   }
   return set
 })
@@ -40,14 +40,15 @@ function shuffle(deck){
  * Creates a new array of combined decks depending on how many decks are wanted, then shuffles those together.
  * @param {number} number number of decks to 
  */
-function addDecks(number){
+async function addDecks(number){
   let final = DECK;
   for(let index = 0; index < number; index++) final = [...final, ...DECK];
-  return shuffle(final);
+  final = shuffle(final);
+  return final;
 }
 
 function createHand(isDealer=false){
-  
+
 }
 
 module.exports = {
@@ -58,6 +59,7 @@ module.exports = {
       ctx.reply('Deck limit (5) exceeded. Please try again.');
       return;
     }
+    const gameDeck = await addDecks(decks);
     const newUsers = []
     let id;
     try {
@@ -70,7 +72,8 @@ module.exports = {
         }
       }
       id = generateId(newUsers)
-      await Blackjack.create({gameId: id, users:newUsers})
+      console.log(gameDeck);
+      await Blackjack.create({gameId: id, users:newUsers, deck:gameDeck})
     } catch (err) {
       console.error(err);
       ctx.reply({content: 'Either you or the target are already in a game...', ephemeral:true})
@@ -80,7 +83,7 @@ module.exports = {
     const bljEmb = new MessageEmbed()
       .setTitle('Blackjack')
       .setDescription(`Dealer: ??`)
-      .addField('Deck', `${addDecks(decks)}`, true)
+      .addField('Deck', `${gameDeck.length}`, true)
       .setFooter({text:String(id)})
     
     const row = new MessageActionRow()
