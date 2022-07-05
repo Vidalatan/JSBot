@@ -1,5 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
-const { generateId } = require('../../utils/gameIdGenerator')
+const { generateId } = require('../../utils/gameId.js')
 const { User } = require('../../models/User.js')
 const {Blackjack} = require('../../models/challenges/Blackjack.js');
 
@@ -44,7 +44,7 @@ function shuffle(deck){
  */
 async function addDecks(number){
   let final = DECK;
-  for(let index = 0; index < number; index++) final = [...final, ...DECK];
+  for(let index = 0; index < number-1; index++) final = [...final, ...DECK];
   final = shuffle(final);
   return final;
 }
@@ -64,21 +64,20 @@ module.exports = {
       return;
     }
     const gameDeck = await addDecks(decks); // Combination of decks after they have been shuffled.
-    const newUsers = []; // List will be used to hold the requesting and challenged players
+    const gameUsers = []; // List will be used to hold the requesting and challenged players
     let id; // Will be used to set the game Id                   
     try {
+      // For each of the challenger and their target, either find their user in the DB or create a new user.
       for(let u of [ctx.author.id, target.slice(2,-1)]){
         const f = await User.findOne({user:`<@${u}>`})
-        console.log(f, u);
         if(f){
-          newUsers.push(f)
+          gameUsers.push(f)
         } else{
-          newUsers.push(await User.create({user:`<@${u}>`}))
+          gameUsers.push(await User.create({user:`<@${u}>`}))
         }
       }
-      id = generateId(newUsers)
-      console.log('notbroke');
-      await Blackjack.create({gameId: id, users:newUsers, deck:gameDeck})
+      id = generateId(gameUsers)
+      await Blackjack.create({gameId: id, deck:gameDeck, users: gameUsers})
     } catch (err) {
       console.error(err);
       ctx.reply({content: 'Either you or the target are already in a game...', ephemeral:true})
