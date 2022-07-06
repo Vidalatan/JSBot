@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const { userSchema } = require('../User.js')
+const { userSchema } = require('../User.js');
 
 const cardSchema = new Schema(
   {
@@ -22,7 +22,7 @@ const blackjackSchema = new Schema(
       required: true
     },
     deck: [cardSchema],
-    users: [userSchema]
+    users:[{...userSchema.clone, unique:false}]
   }
 );
 
