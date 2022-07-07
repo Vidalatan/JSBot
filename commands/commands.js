@@ -153,7 +153,8 @@ module.exports = {
     e(ctx){
       let cmdList='Here is a list of all the available commands (commands are not case sensitive):\n'
       for(let command in this.parent){
-        if(command[0] !== '_'){
+        console.log(command);
+        if(command[0] !== '_' && command[0] !== '$'){
           cmdList += 
           `\`\`\`\n`+
           `${command.toUpperCase()}:\n\n`+
@@ -167,7 +168,8 @@ module.exports = {
 
   help:{
     helper:
-    `Will look for valid matching command.
+    `Will look for valid matching command. If no command provided, 
+    then a list of available commands will be shown.
 
     Example:\`\` ${config.prefix}help {command} \`\``,
     
@@ -179,6 +181,10 @@ module.exports = {
      * stating no command was found.
      */
     e(ctx, cmd){
+      if(!cmd) {
+        this.parent['commandlist'].e(ctx)
+        return
+      }
       for(let command in this.parent){
         if(command === cmd) {
           ctx.reply(this.parent[command]['helper'])
