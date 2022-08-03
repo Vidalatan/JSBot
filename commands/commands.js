@@ -1,5 +1,5 @@
 const config = require('../config.json')
-const {_purge_} = require('../models/purge.js')
+const {_purge_} = require('../utils/purge.js')
 const challenges = 
 {
   blackjack:require('./challengeGames/blackjack.js'),

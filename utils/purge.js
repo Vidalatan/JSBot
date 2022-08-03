@@ -2,8 +2,8 @@
 // const { Blackjack } = require('./challenges/Blackjack.js')
 const DBs = 
 [
-  require('./User.js'),
-  require('./challenges/Blackjack.js')
+  require('../models/User.js'),
+  require('../models/challenges/Blackjack.js')
 ]
 
 function _purge_(){
