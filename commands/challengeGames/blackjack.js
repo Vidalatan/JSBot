@@ -14,13 +14,9 @@ const VALUES =
 ]
 
 // For each suit, create a {suit,value} pair and then flatten the array
-const DECK = SUITS.flatMap(suit => {
-  const set = []
-  for(let value of VALUES){
-    set.push({suit:suit, value:value})
-  }
-  return set
-})
+const DECK = SUITS.flatMap(suit => VALUES.map(value => suit+value))
+
+console.log(DECK);
 
 /**
  * Shuffles deck randomly and returns the shuffled deck.

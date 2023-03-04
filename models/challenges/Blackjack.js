@@ -1,19 +1,6 @@
 const { Schema, model } = require('mongoose');
 const { userSchema } = require('../User.js');
 
-const cardSchema = new Schema(
-  {
-    suit: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: String,
-      required: true
-    }
-  }
-)
-
 const blackjackSchema = new Schema(
   {
     gameId: {
@@ -21,7 +8,10 @@ const blackjackSchema = new Schema(
       unique: true,
       required: true
     },
-    deck: [cardSchema],
+    deck: {
+      type: Array,
+      required: true
+    },
     users:[{...userSchema.clone, unique:false}]
   }
 );
